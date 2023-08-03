@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -256,7 +257,7 @@ public class Connector {
         if (entries.size() < 5) { throw new IllegalArgumentException("list must at least have 5 entries"); }
         final List<Entry> lastEntries = entries.stream().sorted(Comparator.comparingLong(Entry::datelong).reversed()).limit(5).collect(Collectors.toList());
         final Entry       lastEntry   = entries.stream().sorted(Comparator.comparingLong(Entry::datelong).reversed()).collect(Collectors.toList()).get(entries.size() - 1);
-        final Map<Integer, Double> deltaMap = new HashMap<>();
+        final Map<Integer, Double> deltaMap = new HashMap<>(4);
         for (int i = 1 ; i  < 5 ; i++) {
             final Entry  entry1         = lastEntries.get(i - 1);
             final Entry  entry2         = lastEntries.get(i);
@@ -267,20 +268,28 @@ public class Connector {
 
             deltaMap.put(i, deltaSGV);
         }
+        List<Double> deltaList = new LinkedList<>();
+        for (int i = 1 ; i < 4 ; i++) {
+            double delta = deltaMap.get(i);
+            double nextDelta = deltaMap.get(i + 1);
+            deltaList.add(nextDelta - delta);
+        }
 
-        final double average = deltaMap.values().stream().mapToDouble(Double::valueOf).sum() / entries.size();
-        final double lastSGV = lastEntry.sgv();
-        if (lastSGV < MIN_CRITICAL) {
+        final double average      = deltaList.stream().mapToDouble(Double::valueOf).sum() / deltaList.size();
+        final double lastSGV      = lastEntry.sgv();
+        final double estimatedSGV = lastSGV + average * 3;
+
+        if (estimatedSGV < MIN_CRITICAL) {
+            return Prediction.TOO_LOW;
+        } else if (estimatedSGV < MIN_ACCEPTABLE) {
             return Prediction.SOON_TOO_LOW;
-        } else if (lastSGV < MIN_ACCEPTABLE && average <= -5) {
-            return Prediction.SOON_TOO_LOW;
-        } else if (lastSGV < MIN_NORMAL && average <= -5) {
+        } else if (estimatedSGV < MIN_NORMAL) {
             return Prediction.SOON_LOW;
-        } else if (lastSGV > MAX_NORMAL && average >= 5) {
+        } else if (estimatedSGV > MAX_NORMAL) {
             return Prediction.SOON_HIGH;
-        } else if (lastSGV > MAX_ACCEPTABLE && average >= 5) {
+        } else if (estimatedSGV > MAX_ACCEPTABLE) {
             return Prediction.SOON_TOO_HIGH;
-        } else if (lastSGV > TOO_HIGH) {
+        } else if (estimatedSGV > TOO_HIGH) {
             return Prediction.TOO_HIGH;
         }
         return Prediction.NONE;

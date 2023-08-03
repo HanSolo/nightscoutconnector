@@ -162,9 +162,9 @@ public class LibTest {
         Entry entry7  = new Entry("7", 95, min10, OffsetDateTime.ofInstant(nowMinus10, ZoneId.systemDefault()), "", Trend.FLAT, "", "", "", 2, 0, 0, 0, 0, 0, "");
         Entry entry8  = new Entry("8", 85, min10, OffsetDateTime.ofInstant(nowMinus15, ZoneId.systemDefault()), "", Trend.FLAT, "", "", "", 2, 0, 0, 0, 0, 0, "");
         Entry entry9  = new Entry("9", 70, min10, OffsetDateTime.ofInstant(nowMinus20, ZoneId.systemDefault()), "", Trend.FLAT, "", "", "", 2, 0, 0, 0, 0, 0, "");
-        Entry entry10 = new Entry("10", 65, min10, OffsetDateTime.ofInstant(nowMinus25, ZoneId.systemDefault()), "", Trend.FLAT, "", "", "", 2, 0, 0, 0, 0, 0, "");
+        Entry entry10 = new Entry("10", 60, min10, OffsetDateTime.ofInstant(nowMinus25, ZoneId.systemDefault()), "", Trend.FLAT, "", "", "", 2, 0, 0, 0, 0, 0, "");
         entries = List.of(entry6, entry7, entry8, entry9, entry10);
 
-        assert Connector.predict(entries) == Prediction.SOON_LOW;
+        assert Connector.predict(entries) == Prediction.SOON_TOO_LOW;
     }
 }
