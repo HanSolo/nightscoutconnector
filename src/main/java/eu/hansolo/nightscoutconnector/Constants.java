@@ -46,4 +46,13 @@ public class Constants {
 
     public static final Converter         MGDL_CONVERTER       = new Converter(BLOOD_GLUCOSE, MILLIGRAM_PER_DECILITER);
     public static final Converter         MMOL_CONVERTER       = new Converter(BLOOD_GLUCOSE, MILLIMOL_PER_LITER);
+
+    public static final double            MIN_CRITICAL         = 55;
+    public static final double            MIN_ACCEPTABLE       = 65;
+    public static final double            MIN_NORMAL           = 70;
+    public static final double            MAX_NORMAL           = 140;
+    public static final double            MAX_ACCEPTABLE       = 160;
+    public static final double            MIN_HIGH             = 180;
+    public static final double            MAX_HIGH             = 250;
+    public static final double            TOO_HIGH             = 250;
 }

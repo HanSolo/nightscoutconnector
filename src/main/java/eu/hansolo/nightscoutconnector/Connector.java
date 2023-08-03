@@ -33,7 +33,7 @@ import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIGRAM_PER_DECILITER;
 import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
-public class Helper {
+public class Connector {
     private static HttpClient httpClient;
     private static HttpClient httpClientAsync;
 
@@ -235,28 +235,31 @@ public class Helper {
 
     // ******************** Calculations **************************************
     public static final double mmolPerLiterToMgPerDeciliter(final double mmolPerLiter) {
+        if (mmolPerLiter <= 0) { throw new IllegalArgumentException("mmolPerLiter must be greater than 0"); }
         return MMOL_CONVERTER.convert(mmolPerLiter, MILLIGRAM_PER_DECILITER);
     }
 
     public static final double mgPerDeciliterToMmolPerLiter(final double mgPerDeciliter) {
+        if (mgPerDeciliter <= 0) { throw new IllegalArgumentException("mgPerDeciliter must be greater than 0"); }
         return MGDL_CONVERTER.convert(mgPerDeciliter, MILLIMOL_PER_LITER);
     }
 
     public static final double calcHbA1c(final List<Entry> entries) {
-        double average = 0;
-        double hba1c   = 0;
+        if (null == entries) { throw new IllegalArgumentException("list of entries cannot be null"); }
+        double hba1c = 0;
         if (!entries.isEmpty()) {
-            average = entries.stream().map(entry -> entry.sgv()).reduce(0.0, Double::sum).doubleValue() / entries.size();
+            double average = entries.stream().map(entry -> entry.sgv()).reduce(0.0, Double::sum).doubleValue() / entries.size();
             //hba1c   = (46.7 + average) / 28.7;  // formula from 2008
             hba1c   = (0.0296 * average) + 2.419; // formula from 2014 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4771657/)
         }
         return hba1c;
     }
 
-    public static final void predict(final List<Entry> entries) {
-        if (entries.size() < 5) { return; }
-        List<Entry> lastEntries = entries.stream().sorted(Comparator.comparingLong(Entry::datelong).reversed()).limit(5).collect(Collectors.toList());
-        final long                 now      = Instant.now().getEpochSecond();
+    public static final Prediction predict(final List<Entry> entries) throws IllegalArgumentException {
+        if (null == entries) { throw new IllegalArgumentException("list of entries cannot be null"); }
+        if (entries.size() < 5) { throw new IllegalArgumentException("list must at least have 5 entries"); }
+        final List<Entry> lastEntries = entries.stream().sorted(Comparator.comparingLong(Entry::datelong).reversed()).limit(5).collect(Collectors.toList());
+        final Entry       lastEntry   = entries.stream().sorted(Comparator.comparingLong(Entry::datelong).reversed()).collect(Collectors.toList()).get(entries.size() - 1);
         final Map<Integer, Double> deltaMap = new HashMap<>();
         for (int i = 1 ; i  < 5 ; i++) {
             final Entry  entry1         = lastEntries.get(i - 1);
@@ -264,15 +267,27 @@ public class Helper {
 
             final double sgv1           = entry1.sgv();
             final double sgv2           = entry2.sgv();
-            final double deltaSGV       = sgv1 - sgv2;
+            final double deltaSGV       = sgv2 - sgv1;
 
-            final long   timestamp1     = entry1.datelong();
-            final long   timestamp2     = entry2.datelong();
-            final long   deltaTimestamp = timestamp1 - timestamp2;
-
-            System.out.println("Delta " + i + ": " + deltaSGV + " in " + deltaTimestamp + " s");
             deltaMap.put(i, deltaSGV);
         }
+
+        final double average = deltaMap.values().stream().mapToDouble(Double::valueOf).sum() / entries.size();
+        final double lastSGV = lastEntry.sgv();
+        if (lastSGV < MIN_CRITICAL) {
+            return Prediction.SOON_TOO_LOW;
+        } else if (lastSGV < MIN_ACCEPTABLE && average <= -5) {
+            return Prediction.SOON_TOO_LOW;
+        } else if (lastSGV < MIN_NORMAL && average <= -5) {
+            return Prediction.SOON_LOW;
+        } else if (lastSGV > MAX_NORMAL && average >= 5) {
+            return Prediction.SOON_HIGH;
+        } else if (lastSGV > MAX_ACCEPTABLE && average >= 5) {
+            return Prediction.SOON_TOO_HIGH;
+        } else if (lastSGV > TOO_HIGH) {
+            return Prediction.TOO_HIGH;
+        }
+        return Prediction.NONE;
     }
 
 
