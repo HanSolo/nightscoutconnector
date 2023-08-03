@@ -51,11 +51,7 @@ public class Connector {
         if (null != response) {
             String jsonText = response.body();
             List<Entry> entries = getEntriesFromJsonText(jsonText);
-            if (entries.isEmpty()) {
-                return null;
-            } else {
-                return entries.get(0);
-            }
+            return entries.isEmpty() ? null : entries.get(0);
         }
         return null;
     }

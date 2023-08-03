@@ -20,9 +20,7 @@ public record Entry(String id, double sgv, long datelong, OffsetDateTime date, S
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
         Entry that = (Entry) o;
-        return Double.compare(that.sgv, sgv) == 0 && datelong == that.datelong && utcOffset == that.utcOffset && noise == that.noise && Double.compare(that.filtered, filtered) == 0 && Double.compare(that.unfiltered, unfiltered) == 0 &&
-               rssi == that.rssi && Double.compare(that.delta, delta) == 0 && id.equals(that.id) && Objects.equals(date, that.date) && Objects.equals(dateString, that.dateString) && trend == that.trend &&
-               Objects.equals(direction, that.direction) && Objects.equals(device, that.device) && Objects.equals(type, that.type) && Objects.equals(sysTime, that.sysTime);
+        return Objects.equals(that.id, id);
     }
 
     @Override public int hashCode() {
