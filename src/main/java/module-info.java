@@ -5,4 +5,6 @@ module eu.hansolo.nightscoutconnector {
 
     requires transitive eu.hansolo.toolbox;
     requires transitive com.google.gson;
+
+    exports eu.hansolo.nightscoutconnector;
 }
