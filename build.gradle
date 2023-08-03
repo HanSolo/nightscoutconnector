@@ -11,7 +11,7 @@ plugins {
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-description = 'Toolbox contains a collection of useful tools incl. events, properties, helper classes etc.'
+description = 'NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values'
 
 Date buildTimeAndDate = new Date()
 ext {
@@ -28,7 +28,6 @@ ext {
 
 application {
     mainModule = 'eu.hansolo.nightscoutconnector'
-    mainClass  = 'eu.hansolo.nightscoutconnector.Main'
 }
 
 repositories {
@@ -68,8 +67,7 @@ jar {
                 'Bundle-Description'    : description,
                 'Bundle-SymbolicName'   : 'eu.hansolo.nightscoutconnector',
                 'Export-Package'        : 'eu.hansolo.nightscoutconnector',
-                'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' '),
-                'Main-Class'            : 'eu.hansolo.nightscoutconnector.Main'
+                'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')
         )
     }
 }
@@ -82,12 +80,6 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-
-// start the demo from gradle
-task Main(type: JavaExec) {
-    mainClass = "eu.hansolo.nightscoutconnector.Main"
-    classpath = sourceSets.main.runtimeClasspath
-}
 
 // create one jar for the javadoc
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -119,9 +111,9 @@ signing {
 publishing {
     publications {
         mavenCustom(MavenPublication) {
-            group = 'eu.hansolo'
+            group      = 'eu.hansolo'
             artifactId = 'nightscoutconnector'
-            version = "${version}"
+            version    = "${version}"
 
             from components.java
             artifact sourcesJar
@@ -136,26 +128,26 @@ publishing {
             }
 
             pom {
-                name = 'Toolbox'
+                name        = 'NightscoutConnector'
                 description = 'NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values'
-                url = "https://github.com/HanSolo/nightscoutconnector/wiki"
+                url         = "https://github.com/HanSolo/nightscoutconnector/wiki"
                 licenses {
                     license {
                         name = "The Apache License, Version 2.0"
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        url  = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                     }
                 }
                 developers {
                     developer {
-                        id = "HanSolo"
-                        name = "Gerrit Grunwald"
+                        id    = "HanSolo"
+                        name  = "Gerrit Grunwald"
                         email = "han.solo@mac.com"
                     }
                 }
                 scm {
-                    connection = "scm:git:https://HanSolo/nightscoutconnector"
+                    connection          = "scm:git:https://HanSolo/nightscoutconnector"
                     developerConnection = "scm:git:https://HanSolo/nightscoutconnector"
-                    url = "https://github.com/HanSolo/nightscoutconnector"
+                    url                 = "https://github.com/HanSolo/nightscoutconnector"
                 }
             }
         }
@@ -164,7 +156,7 @@ publishing {
     repositories {
         maven {
             name = "OSSRH"
-            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+            url  = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
             try {
                 credentials {
                     username = null == ciOssrhUsername ? ossrhUsername : ciOssrhUsername
@@ -176,7 +168,7 @@ publishing {
         }
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/HanSolo/nightscoutconnector"
+            url  = "https://maven.pkg.github.com/HanSolo/nightscoutconnector"
             try {
                 credentials {
                     username = null == ciGHUser  ? ghUser  : ciGHUser

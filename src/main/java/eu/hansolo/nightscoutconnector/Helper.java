@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import eu.hansolo.toolbox.unit.Converter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,16 +29,13 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import static eu.hansolo.nightscoutconnector.Constants.*;
-import static eu.hansolo.toolbox.unit.Category.BLOOD_GLUCOSE;
 import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIGRAM_PER_DECILITER;
 import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
 public class Helper {
-    private static final Converter  MGDL_CONVERTER = new Converter(BLOOD_GLUCOSE, MILLIGRAM_PER_DECILITER);
-    private static final Converter  MMOL_CONVERTER = new Converter(BLOOD_GLUCOSE, MILLIMOL_PER_LITER);
-    private static       HttpClient httpClient;
-    private static       HttpClient httpClientAsync;
+    private static HttpClient httpClient;
+    private static HttpClient httpClientAsync;
 
 
     // ******************** Sync methods **************************************

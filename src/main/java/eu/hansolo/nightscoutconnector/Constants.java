@@ -1,11 +1,15 @@
 package eu.hansolo.nightscoutconnector;
 
+import eu.hansolo.toolbox.unit.Converter;
+
 import java.time.format.DateTimeFormatter;
+
+import static eu.hansolo.toolbox.unit.Category.BLOOD_GLUCOSE;
+import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIGRAM_PER_DECILITER;
+import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
 public class Constants {
-    public static final long              INITIAL_DELAY_MS     = 10_000;
-    public static final long              INTERVAL_MS          = 60_000;
     public static final String            CURRENT_JSON         = "/api/v2/entries/current.json";
     public static final String            ENTRIES_JSON         = "/api/v2/entries.json";
     public static final String            TREATMENTS_JSON      = "/api/v2/treatments.json";
@@ -39,4 +43,7 @@ public class Constants {
     public static final String            FIELD_SENSOR_CODE    = "sensorCode";
     public static final String            FIELD_NOTES          = "notes";
     public static final String            FIELD_ENTERED_BY     = "enteredBy";
+
+    public static final Converter         MGDL_CONVERTER       = new Converter(BLOOD_GLUCOSE, MILLIGRAM_PER_DECILITER);
+    public static final Converter         MMOL_CONVERTER       = new Converter(BLOOD_GLUCOSE, MILLIMOL_PER_LITER);
 }
