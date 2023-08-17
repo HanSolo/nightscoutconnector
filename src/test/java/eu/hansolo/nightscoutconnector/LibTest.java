@@ -71,6 +71,16 @@ public class LibTest {
     }
 
     @Test
+    void testLastEntryAsync() {
+        int noOfEntries = 1;
+        ObservableList<Entry> entries = new ObservableList<>();
+
+        entries.addListChangeObserver(ListChangeEvt.ADDED, e -> {
+            assert entries.size() == noOfEntries;
+        });
+    }
+
+    @Test
     void testEntriesFromIntervalAsync() {
         Interval              interval = Interval.LAST_7_DAYS;
         ObservableList<Entry> entries  = new ObservableList<>();

@@ -390,7 +390,7 @@ public class Connector {
                                          .GET()
                                          .uri(URI.create(uri))
                                          .setHeader("Accept", "application/json")
-                                         .setHeader("User-Agent", "Sweety")
+                                         .setHeader("User-Agent", "NightscoutConnector")
                                          .setHeader("API_SECRET", apiSecret)
                                          .timeout(Duration.ofSeconds(60))
                                          .build();
@@ -415,7 +415,7 @@ public class Connector {
                                                .GET()
                                                .uri(URI.create(uri))
                                                .setHeader("Accept", "application/json")
-                                               .setHeader("User-Agent", "Sweety")
+                                               .setHeader("User-Agent", "NightscoutConnector")
                                                .setHeader("API_SECRET", apiSecret)
                                                .timeout(Duration.ofSeconds(60))
                                                .build();
