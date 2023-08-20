@@ -45,7 +45,7 @@ public class Connector {
         final String        secret     = null == apiSecret ? "" : apiSecret;
         final String        token      = (null == nightscoutToken || nightscoutToken.isEmpty()) ? "" : nightscoutToken;
         final StringBuilder urlBuilder = new StringBuilder().append(nightscoutUrl).append(CURRENT_JSON);
-        if (!token.isEmpty()) { urlBuilder.append("&token=").append(token); }
+        if (!token.isEmpty()) { urlBuilder.append("?token=").append(token); }
 
         final String               url      = urlBuilder.toString();
         final HttpResponse<String> response = get(url, secret);
