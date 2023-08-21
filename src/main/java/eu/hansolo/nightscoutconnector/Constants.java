@@ -10,8 +10,8 @@ import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
 public class Constants {
-    public static final String            CURRENT_JSON         = "/api/v2/entries/current.json";
-    public static final String            ENTRIES_JSON         = "/api/v2/entries.json";
+    public static final String            CURRENT_JSON         = "/api/v2/entries/sgv.json?count=1";
+    public static final String            ENTRIES_JSON         = "/api/v2/entries/sgv.json";
     public static final String            TREATMENTS_JSON      = "/api/v2/treatments.json";
     public static final DateTimeFormatter DTF                  = DateTimeFormatter.ofPattern("dd/MM/YY HH:mm");
     public static final String            FIELD_ID             = "_id";

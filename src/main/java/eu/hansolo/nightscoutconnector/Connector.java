@@ -45,7 +45,7 @@ public class Connector {
         final String        secret     = null == apiSecret ? "" : apiSecret;
         final String        token      = (null == nightscoutToken || nightscoutToken.isEmpty()) ? "" : nightscoutToken;
         final StringBuilder urlBuilder = new StringBuilder().append(nightscoutUrl).append(CURRENT_JSON);
-        if (!token.isEmpty()) { urlBuilder.append("?token=").append(token); }
+        if (!token.isEmpty()) { urlBuilder.append("&token=").append(token); }
 
         final String               url      = urlBuilder.toString();
         final HttpResponse<String> response = get(url, secret);
@@ -297,7 +297,7 @@ public class Connector {
 
 
     // ******************** Parsing *******************************************
-    private static List<Entry> getEntriesFromJsonText(final String jsonText) throws IllegalArgumentException, AccessDeniedException {
+    public static final List<Entry> getEntriesFromJsonText(final String jsonText) throws IllegalArgumentException, AccessDeniedException {
         if (null == jsonText || jsonText.isEmpty()) { throw new IllegalArgumentException("jsonText cannot be null or empty"); }
         final List<Entry> entries     = new ArrayList<>();
         final Gson        gson        = new Gson();
@@ -335,7 +335,7 @@ public class Connector {
         }
     }
 
-    private static List<Treatment> getTreatmentsFromJsonText(final String jsonText) throws IllegalArgumentException, AccessDeniedException {
+    public static final List<Treatment> getTreatmentsFromJsonText(final String jsonText) throws IllegalArgumentException, AccessDeniedException {
         if (null == jsonText || jsonText.isEmpty()) { throw new IllegalArgumentException("jsonText cannot be null or empty"); }
         final List<Treatment> treatments  = new ArrayList<>();
         final Gson            gson        = new Gson();

@@ -177,4 +177,31 @@ public class LibTest {
 
         assert Connector.predict(entries) == Prediction.SOON_TOO_LOW;
     }
+
+    @Test
+    void testParseEntries() {
+        String entry1 = "[{\"_id\":\"64e114641ace7961997a8950\",\"device\":\"bubble\",\"date\":1692472374395,\"dateString\":\"2023-08-19T19:12:54.395Z\",\"sgv\":223,\"delta\":719175.346,\"direction\":\"SingleUp\",\"type\":\"sgv\",\"filtered\":223000,\"unfiltered\":223000,\"rssi\":1,\"noise\":1,\"sysTime\":\"2023-08-19T19:12:54.395Z\",\"dataType\":0,\"recordNumber\":19980,\"uploadDatatype\":\"upload1\",\"utcOffset\":120}]";
+        try {
+            List<Entry> entries = Connector.getEntriesFromJsonText(entry1);
+            assert entries.get(0).sgv() == 223;
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String entry2 = "[{\"_id\":\"64e30abd35608dfc20c1f45f\",\"device\":\"xDrip-LimiTTer\",\"type\":\"cal\",\"date\":1692601019196,\"dateString\":\"2023-08-21T06:56:59.196Z\",\"slope\":666.6666666666666,\"intercept\":43719.04479166667,\"scale\":1,\"sysTime\":\"2023-08-21T06:56:59.196Z\",\"utcOffset\":180}]";
+        try {
+            List<Entry> entries = Connector.getEntriesFromJsonText(entry2);
+            assert entries.get(0).type().equals("cal");
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+
+        String entry3 = "[{\"_id\":\"64e30997533cf5d7beb9ca14\",\"sgv\":119,\"date\":1692600707100,\"dateString\":\"2023-08-21T06:51:47.100Z\",\"trend\":4,\"direction\":\"Flat\",\"device\":\"go-away-please\",\"type\":\"sgv\",\"utcOffset\":0,\"sysTime\":\"2023-08-21T06:51:47.100Z\"}]";
+        try {
+            List<Entry> entries = Connector.getEntriesFromJsonText(entry3);
+            assert entries.get(0).sgv() == 119;
+        } catch (AccessDeniedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
