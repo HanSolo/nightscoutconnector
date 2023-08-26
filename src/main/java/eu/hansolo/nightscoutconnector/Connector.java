@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import static eu.hansolo.nightscoutconnector.Constants.*;
@@ -35,8 +37,8 @@ import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
 public class Connector {
-    private static HttpClient httpClient;
-    private static HttpClient httpClientAsync;
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(2);
+    private static       HttpClient      httpClient       = createHttpClient();
 
 
     // ******************** Sync methods **************************************
@@ -376,10 +378,10 @@ public class Connector {
     // ******************** REST calls ****************************************
     private static HttpClient createHttpClient() {
         return HttpClient.newBuilder()
-                         .connectTimeout(Duration.ofSeconds(20))
+                         .connectTimeout(Duration.ofSeconds(5))
                          .version(Version.HTTP_2)
                          .followRedirects(Redirect.NORMAL)
-                         //.executor(Executors.newFixedThreadPool(4))
+                         .executor(EXECUTOR_SERVICE)
                          .build();
     }
 
@@ -392,7 +394,7 @@ public class Connector {
                                          .setHeader("Accept", "application/json")
                                          .setHeader("User-Agent", "NightscoutConnector")
                                          .setHeader("API_SECRET", apiSecret)
-                                         .timeout(Duration.ofSeconds(60))
+                                         .timeout(Duration.ofSeconds(5))
                                          .build();
 
         try {
@@ -409,7 +411,7 @@ public class Connector {
     }
 
     public static final CompletableFuture<HttpResponse<String>> getAsync(final String uri, final String apiSecret) {
-        if (null == httpClientAsync) { httpClientAsync = createHttpClient(); }
+        if (null == httpClient) { httpClient = createHttpClient(); }
 
         final HttpRequest request = HttpRequest.newBuilder()
                                                .GET()
@@ -417,8 +419,8 @@ public class Connector {
                                                .setHeader("Accept", "application/json")
                                                .setHeader("User-Agent", "NightscoutConnector")
                                                .setHeader("API_SECRET", apiSecret)
-                                               .timeout(Duration.ofSeconds(60))
+                                               .timeout(Duration.ofSeconds(5))
                                                .build();
-        return httpClientAsync.sendAsync(request, BodyHandlers.ofString());
+        return httpClient.sendAsync(request, BodyHandlers.ofString());
     }
 }
