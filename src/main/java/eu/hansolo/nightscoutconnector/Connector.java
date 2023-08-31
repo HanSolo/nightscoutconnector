@@ -29,6 +29,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static eu.hansolo.nightscoutconnector.Constants.*;
@@ -37,6 +39,7 @@ import static eu.hansolo.toolbox.unit.UnitDefinition.MILLIMOL_PER_LITER;
 
 
 public class Connector {
+    private static final Logger          LOGGER           = Logger.getLogger(Connector.class.getName());
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(2);
     private static       HttpClient      httpClient       = createHttpClient();
 
@@ -396,16 +399,22 @@ public class Connector {
                                          .setHeader("API_SECRET", apiSecret)
                                          .timeout(Duration.ofSeconds(5))
                                          .build();
-
+        final long start = System.nanoTime();
         try {
             HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+            final long responseTime = (System.nanoTime() - start) / 1_000_000;
+            if (responseTime > 2_000) {
+                LOGGER.log(Level.INFO, new StringBuilder("Slow response: ").append(uri).append(" -> ").append(responseTime).append("ms").toString());
+            }
             if (response.statusCode() == 200) {
                 return response;
             } else {
                 // Problem with url request
+                LOGGER.log(Level.WARNING, new StringBuilder("StatusCode: ").append(response.statusCode()).append(" accessing ").append(uri).toString());
                 return response;
             }
         } catch (CompletionException | InterruptedException | IOException e) {
+            LOGGER.log(Level.WARNING, new StringBuilder("Error accessing: ").append(uri).toString());
             return null;
         }
     }
