@@ -5,7 +5,7 @@ plugins {
     id 'application'
     id 'maven-publish'
     id 'signing'
-    id 'net.nemerosa.versioning' version '3.0.0'
+    id 'net.nemerosa.versioning' version '3.1.0'
 }
 
 apply plugin: 'maven-publish'
@@ -35,10 +35,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'eu.hansolo:toolbox:21.0.1'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    implementation 'eu.hansolo:toolbox:21.0.9'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
 
@@ -83,6 +83,7 @@ if (JavaVersion.current().isJava8Compatible()) {
 
 // create one jar for the javadoc
 task javadocJar(type: Jar, dependsOn: javadoc) {
+    dependsOn javadoc
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -159,8 +160,8 @@ publishing {
             url  = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
             try {
                 credentials {
-                    username = null == ciOssrhUsername ? ossrhUsername : ciOssrhUsername
-                    password = null == ciOssrhPassword ? ossrhPassword : ciOssrhPassword
+                    username = null == ciOssrhUsername ? ossrhToken         : ciOssrhUsername
+                    password = null == ciOssrhPassword ? ossrhTokenPassword : ciOssrhPassword
                 }
             } catch (Exception e) {
 
