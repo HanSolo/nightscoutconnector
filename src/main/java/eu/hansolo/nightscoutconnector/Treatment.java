@@ -23,7 +23,7 @@ public record Treatment(String id, String eventType, String created_at, String g
         return new StringBuilder().append("{")
                                   .append("\"created_at\":\"").append(created_at).append("\",")
                                   .append("\"carbs\":").append(carbs).append(",")
-                                  .append("\"insulin\":").append(insulin).append(",")
+                                  .append("\"insulin\":").append(insulin)
                                   .append("}")
                                   .toString();
     }
