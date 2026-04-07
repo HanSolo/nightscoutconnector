@@ -29,14 +29,15 @@ repositories {
 dependencies {
     implementation 'eu.hansolo:toolbox:21.0.31'
     implementation 'com.google.code.gson:gson:2.13.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+
+    testImplementation platform('org.junit:junit-bom:5.10.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 application {
     mainModule = 'eu.hansolo.nightscoutconnector'
 }
-
 
 jar {
     from {
@@ -102,7 +103,7 @@ mavenPublishing {
     coordinates("eu.hansolo", "nightscoutconnector", "${version}")
 
     pom {
-        name = "Toolbox"
+        name = "NightScoutConnector"
         description = "NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values"
         inceptionYear = "2026"
         url = "https://github.com/HanSolo/nightscoutconnector/"
@@ -127,4 +128,8 @@ mavenPublishing {
             developerConnection = "scm:git:ssh://git@github.com/HanSolo/nightscoutconnector.git"
         }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
