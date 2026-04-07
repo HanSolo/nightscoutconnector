@@ -65,8 +65,8 @@ jar {
                 'Bundle-Version'        : project.version,
                 'Bundle-SymbolicName'   : 'eu.hansolo.nightscoutconnector',
                 'Export-Package'        : 'eu.hansolo.nightscoutconnector',
-                'Class-Path'            : "${project.name}-${project.version}.jar"
-                //'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')
+                //'Class-Path'            : "${project.name}-${project.version}.jar"
+                'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')
         )
     }
 }
