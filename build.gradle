@@ -3,13 +3,9 @@ import java.text.SimpleDateFormat
 plugins {
     id 'java-library'
     id 'application'
-    id 'maven-publish'
-    id 'signing'
     id 'net.nemerosa.versioning' version '3.1.0'
+    id 'com.vanniktech.maven.publish' version '0.34.0'
 }
-
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 description = 'NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values'
 
@@ -26,26 +22,26 @@ ext {
     gpgpassphrase   = System.getenv("PASSPHRASE")
 }
 
-application {
-    mainModule = 'eu.hansolo.nightscoutconnector'
-}
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'eu.hansolo:toolbox:21.0.17'
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'eu.hansolo:toolbox:21.0.31'
+    implementation 'com.google.code.gson:gson:2.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+}
+
+application {
+    mainModule = 'eu.hansolo.nightscoutconnector'
 }
 
 
 jar {
     from {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect {  it.isDirectory() ? it : zipTree(it)  }
+        //duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        //configurations.runtimeClasspath.collect {  it.isDirectory() ? it : zipTree(it)  }
     } {
         exclude "META-INF/*.SF"
         exclude "META-INF/*.DSA"
@@ -68,7 +64,8 @@ jar {
                 'Bundle-Version'        : project.version,
                 'Bundle-SymbolicName'   : 'eu.hansolo.nightscoutconnector',
                 'Export-Package'        : 'eu.hansolo.nightscoutconnector',
-                'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')
+                'Class-Path'            : "${project.name}-${project.version}.jar"
+                //'Class-Path'            : configurations.runtimeClasspath.files.collect { it.getName() }.join(' ')
         )
     }
 }
@@ -81,16 +78,16 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-
 // create one jar for the javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    dependsOn javadoc
+tasks.register('javadocJar', Jar) {
+    dependsOn tasks.javadoc
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 // create one jar for the source files
-task sourcesJar(type: Jar, dependsOn: classes) {
+tasks.register('sourcesJar', Jar) {
+    dependsOn tasks.classes
     archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
@@ -101,84 +98,33 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    if (gpgkey && gpgpassphrase) {
-        useInMemoryPgpKeys(gpgkey, gpgpassphrase)
-    }
+mavenPublishing {
+    coordinates("eu.hansolo", "nightscoutconnector", "${version}")
 
-    sign configurations.archives
-    sign publishing.publications
-}
-
-publishing {
-    publications {
-        mavenCustom(MavenPublication) {
-            group      = 'eu.hansolo'
-            artifactId = 'nightscoutconnector'
-            version    = "${version}"
-
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-
-            pom.withXml {
-                asNode().dependencies.'*'.findAll {
-                    it.groupId.text() == 'org.openjfx'
-                }.each {
-                    it.remove(it.classifier)
-                }
-            }
-
-            pom {
-                name        = 'NightscoutConnector'
-                description = 'NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values'
-                url         = "https://github.com/HanSolo/nightscoutconnector/wiki"
-                licenses {
-                    license {
-                        name = "The Apache License, Version 2.0"
-                        url  = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                    }
-                }
-                developers {
-                    developer {
-                        id    = "HanSolo"
-                        name  = "Gerrit Grunwald"
-                        email = "han.solo@mac.com"
-                    }
-                }
-                scm {
-                    connection          = "scm:git:https://HanSolo/nightscoutconnector"
-                    developerConnection = "scm:git:https://HanSolo/nightscoutconnector"
-                    url                 = "https://github.com/HanSolo/nightscoutconnector"
-                }
+    pom {
+        name = "Toolbox"
+        description = "NightscoutConnector is a little library to connect to a Nightscout server and retrieve blood glucose values"
+        inceptionYear = "2026"
+        url = "https://github.com/HanSolo/nightscoutconnector/"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
-    }
-
-    repositories {
-        maven {
-            name = "OSSRH"
-            url  = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-            try {
-                credentials {
-                    username = null == ciOssrhUsername ? ossrhToken         : ciOssrhUsername
-                    password = null == ciOssrhPassword ? ossrhTokenPassword : ciOssrhPassword
-                }
-            } catch (Exception e) {
-
+        developers {
+            developer {
+                id = "HanSolo"
+                name = "Gerrit Grunwald"
+                email = "han.solo@mac.com"
+                url = "https://github.com/HanSolo/"
             }
         }
-        maven {
-            name = "GitHubPackages"
-            url  = "https://maven.pkg.github.com/HanSolo/nightscoutconnector"
-            try {
-                credentials {
-                    username = null == ciGHUser  ? ghUser  : ciGHUser
-                    password = null == ciGHToken ? ghToken : ciGHToken
-                }
-            } catch (Exception e) {
-
-            }
+        scm {
+            url = "https://github.com/HanSolo/nightscoutconnector/"
+            connection = "scm:git:git://github.com/HanSolo/nightscoutconnector.git"
+            developerConnection = "scm:git:ssh://git@github.com/HanSolo/nightscoutconnector.git"
         }
     }
 }
